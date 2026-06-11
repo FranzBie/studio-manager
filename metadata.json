@@ -1,6 +1,0 @@
-{
-  "name": "Studio Workflow Manager",
-  "description": "An interactive, multi-team business task management system specialized for photography shoots, fine art printing production, and custom picture framing workflows.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
