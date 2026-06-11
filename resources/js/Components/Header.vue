@@ -12,11 +12,8 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-xs font-mono font-bold tracking-[0.1em] text-white uppercase leading-none">
-              Studio Scheduler SaaS Space
+              Studio Scheduler Space
             </h1>
-            <span class="bg-[#C54B2C]/95 text-white font-mono text-[8px] px-1.5 py-0.5 tracking-widest font-extrabold uppercase">
-              {{ activeTenant.plan.toUpperCase() }}
-            </span>
           </div>
 
           <!-- Tenant Switching Workspace Selector -->
@@ -28,69 +25,38 @@
               class="bg-neutral-900 border border-white/10 text-xs font-serif font-bold italic text-[#FAF9F6] focus:outline-none focus:border-[#C54B2C] px-2 py-0.5"
             >
               <option v-for="t in tenants" :key="t.id" :value="t.id">
-                {{ t.name }} ({{ t.plan.toUpperCase() }})
+                {{ t.name }}
               </option>
             </select>
           </div>
         </div>
       </div>
 
-      <!-- SaaS Quota Overview Gauges -->
+      <!-- Workspace Overview Gauges -->
       <div class="grid grid-cols-3 gap-2 bg-[#222222] border border-white/10 p-2.5 max-w-xl text-neutral-300">
-        <!-- Staff Limit -->
+        <!-- Staff Count -->
         <div class="px-2 pr-3 border-r border-white/10">
           <div class="flex justify-between items-center text-[8px] uppercase tracking-wider font-bold">
-            <span>Staff Limit</span>
-            <span class="font-mono text-neutral-450">{{ staffCount }}/{{ activeTenant.max_staff }}</span>
-          </div>
-          <div class="w-full bg-neutral-800 h-1.5 mt-1 border border-white/5 relative overflow-hidden">
-            <div
-              class="h-full transition-all duration-300"
-              :class="staffPercentage >= 100 ? 'bg-red-500' : staffPercentage >= 80 ? 'bg-amber-500' : 'bg-[#C54B2C]'"
-              :style="{ width: `${staffPercentage}%` }"
-            />
+            <span>Staff Enrolled</span>
+            <span class="font-mono text-neutral-450">{{ staffCount }}</span>
           </div>
         </div>
 
-        <!-- Equipment Limit -->
+        <!-- Equipment Count -->
         <div class="px-2 pr-3 border-r border-white/10">
           <div class="flex justify-between items-center text-[8px] uppercase tracking-wider font-bold">
-            <span>Inventory</span>
-            <span class="font-mono text-neutral-450">{{ equipmentCount }}/{{ activeTenant.max_equipment }}</span>
-          </div>
-          <div class="w-full bg-neutral-800 h-1.5 mt-1 border border-white/5 relative overflow-hidden">
-            <div
-              class="h-full transition-all duration-300"
-              :class="equipmentPercentage >= 100 ? 'bg-red-500' : equipmentPercentage >= 80 ? 'bg-amber-500' : 'bg-blue-500'"
-              :style="{ width: `${equipmentPercentage}%` }"
-            />
+            <span>Inventory Items</span>
+            <span class="font-mono text-neutral-450">{{ equipmentCount }}</span>
           </div>
         </div>
 
-        <!-- Monthly Bookings Limit -->
+        <!-- Bookings Count -->
         <div class="px-2">
           <div class="flex justify-between items-center text-[8px] uppercase tracking-wider font-bold">
-            <span>Cycle Bookings</span>
-            <span class="font-mono text-neutral-450">{{ cycleBookingsCount }}/{{ activeTenant.max_monthly_bookings }}</span>
-          </div>
-          <div class="w-full bg-neutral-800 h-1.5 mt-1 border border-white/5 relative overflow-hidden">
-            <div
-              class="h-full transition-all duration-300"
-              :class="bookingsPercentage >= 100 ? 'bg-red-500' : bookingsPercentage >= 80 ? 'bg-amber-500' : 'bg-emerald-500'"
-              :style="{ width: `${bookingsPercentage}%` }"
-            />
+            <span>Total Bookings</span>
+            <span class="font-mono text-neutral-450">{{ cycleBookingsCount }}</span>
           </div>
         </div>
-      </div>
-
-      <!-- SaaS Profile Actions -->
-      <div class="flex gap-2">
-        <button
-          @click="$emit('open-upgrade')"
-          class="px-4 py-2 bg-[#C54B2C] hover:bg-opacity-90 text-white font-extrabold text-[10px] uppercase tracking-widest cursor-pointer transition border border-transparent shadow-md"
-        >
-          Upgrade Membership 💎
-        </button>
       </div>
 
     </div>
@@ -103,12 +69,9 @@ defineProps({
   activeTenantId: String,
   tenants: Array,
   staffCount: Number,
-  staffPercentage: Number,
   equipmentCount: Number,
-  equipmentPercentage: Number,
   cycleBookingsCount: Number,
-  bookingsPercentage: Number
 });
 
-defineEmits(['update:activeTenantId', 'open-upgrade']);
+defineEmits(['update:activeTenantId']);
 </script>

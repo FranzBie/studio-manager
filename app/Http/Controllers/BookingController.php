@@ -40,14 +40,6 @@ class BookingController extends Controller
 
         $tenant = Tenant::findOrFail($tenantId);
 
-        // Enforce SaaS booking cycle quota limits
-        if (!$tenant->canAddBooking()) {
-            return response()->json([
-                'success' => false,
-                'message' => "Quota Limit Exceeded: Your current plan (" . strtoupper($tenant->plan) . ") only allows a max of {$tenant->max_monthly_bookings} bookings per monthly cycle. Upgrade to unlock bulk scheduling!"
-            ], 403);
-        }
-
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'client_name' => 'required|string|max:255',

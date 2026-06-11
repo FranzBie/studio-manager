@@ -35,14 +35,6 @@ class EquipmentController extends Controller
 
         $tenant = Tenant::findOrFail($tenantId);
 
-        // Verify SaaS Business Rule Equipment Limits
-        if (!$tenant->canAddEquipment()) {
-            return response()->json([
-                'success' => false,
-                'message' => "Quota Limit Exceeded: Your current plan (" . strtoupper($tenant->plan) . ") caps equipment at {$tenant->max_equipment} items. Upgrade your subscription to expand gear capacity."
-            ], 403);
-        }
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|string',
