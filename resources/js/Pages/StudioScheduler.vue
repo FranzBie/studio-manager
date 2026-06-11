@@ -6,35 +6,11 @@
       v-model:active-tenant-id="activeTenantId"
       :tenants="tenants"
       :staff-count="staffCount"
-      :staff-percentage="staffPercentage"
       :equipment-count="equipmentCount"
-      :equipment-percentage="equipmentPercentage"
       :cycle-bookings-count="cycleBookingsCount"
-      :bookings-percentage="bookingsPercentage"
-      @open-upgrade="isUpgradeModalOpen = true"
     />
 
     <main class="max-w-7xl mx-auto px-6 mt-8 space-y-6">
-
-      <!-- SaaS Active Quota Limitation Warnings & Notices -->
-      <div 
-        v-if="quotaWarning" 
-        class="bg-[#1A1A1A] text-[#FAF9F6] border-l-4 border-amber-500 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs"
-      >
-        <div class="flex items-start gap-2.5">
-          <span class="text-amber-500 font-extrabold text-sm leading-none shrink-0">⚠️</span>
-          <div>
-            <p class="font-mono text-[9px] uppercase tracking-wider text-amber-500 font-bold mb-0.5">SaaS Resource Cap Reached</p>
-            <p class="font-medium text-neutral-300">{{ quotaWarning }}</p>
-          </div>
-        </div>
-        <button 
-          @click="isUpgradeModalOpen = true"
-          class="shrink-0 text-[10px] uppercase tracking-wider font-extrabold bg-[#C54B2C] text-white hover:bg-opacity-95 p-1.5 px-3 transition cursor-pointer"
-        >
-          Upgrade for Full Quota
-        </button>
-      </div>
 
       <!-- General Studio Informational Toast -->
       <div v-if="notification" class="bg-[#EDECE5] border-l-4 border-[#1A1A1A] text-[#1A1A1A] px-5 py-3.5 flex items-start justify-between gap-4 shadow-sm text-xs select-none">
@@ -57,7 +33,7 @@
             📅 Active Studio Operations Dashboard
           </h2>
           <p class="text-[11px] text-neutral-400 uppercase mt-1.5 tracking-wide font-medium">
-            Active Tenant Workspace: <span class="font-serif font-extrabold italic text-neutral-800">{{ activeTenant.name }} ({{ activeTenant.plan.toUpperCase() }})</span>
+            Active Tenant Workspace: <span class="font-serif font-extrabold italic text-neutral-800">{{ activeTenant.name }}</span>
           </p>
         </div>
 
@@ -94,7 +70,7 @@
                   👤 Studio Staff & Personnel
                 </h4>
                 <p class="text-[10px] text-neutral-450 uppercase mt-0.5 font-medium leading-none">
-                  Quota Limit: {{ staffCount }}/{{ activeTenant.max_staff }} seats
+                  Total Enrolled: {{ staffCount }}
                 </p>
               </div>
               <button
@@ -128,7 +104,6 @@
               </div>
               <button 
                 type="submit" 
-                :disabled="staffCount >= activeTenant.max_staff"
                 class="w-full py-2 bg-[#1A1A1A] disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-[10px] uppercase tracking-wider rounded-none transition"
               >
                 Enroll Staff Member
@@ -182,7 +157,7 @@
                   📦 Studio Physical Gear
                 </h4>
                 <p class="text-[10px] text-neutral-450 uppercase mt-0.5 font-medium leading-none">
-                  Quota Limit: {{ equipmentCount }}/{{ activeTenant.max_equipment }} items
+                  Total Logged: {{ equipmentCount }} items
                 </p>
               </div>
               <button
@@ -195,9 +170,6 @@
 
             <!-- Add Gear Form -->
             <form v-if="showAddEquipmentForm" @submit.prevent="addEquipmentItem" class="bg-[#FAF9F6] p-4 border border-[#1A1A1A]/10 space-y-3">
-              <div v-if="equipmentCount >= activeTenant.max_equipment" class="p-2.5 bg-red-50 text-red-700 border border-red-200 text-[10px] leading-tight font-medium uppercase font-mono">
-                🛑 Hardware Cap Reached! Please upgrade to PRO model to authorize dynamic inventory expansions.
-              </div>
 
               <div>
                 <label class="block text-[10px] font-bold uppercase tracking-wider mb-0.5">Model / Gear title *</label>
@@ -218,7 +190,6 @@
               </div>
               <button 
                 type="submit" 
-                :disabled="equipmentCount >= activeTenant.max_equipment"
                 class="w-full py-2 bg-[#1A1A1A] disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-[10px] uppercase tracking-wider rounded-none transition"
               >
                 Log Hardware Gear
@@ -305,12 +276,12 @@
           <!-- Aesthetic Info Card block -->
           <div class="bg-white p-5 border border-[#1A1A1A]/10 text-xs space-y-3 shadow-xs">
             <h5 class="font-bold text-[#1A1A1A] uppercase text-[9px] tracking-[0.2em] leading-none">
-              ℹ️ Standard SaaS Workspace Guide
+              ℹ️ Standard Workspace Guide
             </h5>
             <ol class="list-decimal list-inside text-[11px] text-neutral-500 space-y-1.5 leading-relaxed">
               <li>Use the workspace selector in the header to bounce between active studio tenants.</li>
-              <li>Resource allocations and scheduling quotas are isolates matching current subscription plans.</li>
-              <li>Upgrade subscription levels anytime to expand gear inventory and maximum concurrent staff limits.</li>
+              <li>Resource allocations and schedules are isolated per workspace.</li>
+              <li>Add staff and gear to expand your workspace capacity.</li>
             </ol>
           </div>
 
@@ -336,155 +307,6 @@
     />
 
 
-    <!-- SAAS MEMBERSHIP PLANS UPGRADE CENTER MODAL -->
-    <div v-if="isUpgradeModalOpen" class="fixed inset-0 z-50 bg-[#1A1A1A]/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div class="bg-[#FDFCFB] border border-[#1A1A1A]/20 w-full max-w-3xl shadow-2xl overflow-hidden">
-        
-        <!-- Header -->
-        <div class="flex items-center justify-between border-b border-[#1A1A1A]/10 px-6 py-5 bg-[#FAF9F6]">
-          <div>
-            <h2 class="text-md font-serif font-bold italic text-[#1A1A1A] leading-none uppercase">
-              💎 Studio Membership & Quotas Upgrade Center
-            </h2>
-            <p class="text-[10px] text-neutral-450 mt-1 uppercase font-mono">
-              Current Active Level: <span class="text-[#C54B2C] font-bold">{{ activeTenant.plan.toUpperCase() }} PLAN</span>
-            </p>
-          </div>
-          <button @click="isUpgradeModalOpen = false" class="p-1 px-2.5 hover:bg-neutral-100 border border-neutral-200">×</button>
-        </div>
-
-        <div class="p-6 space-y-6">
-          <p class="text-[11px] text-neutral-500 leading-relaxed text-center max-w-xl mx-auto">
-            Upgrade your membership to unlock seats for external freelancers, authorize extensive hardware inventories, and book unlimited client sessions on the main master grid.
-          </p>
-
-          <!-- Pricing Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            <!-- Basic Plan level -->
-            <div 
-              class="border p-5 flex flex-col justify-between"
-              :class="activeTenant.plan === 'basic' ? 'border-[#C54B2C] bg-[#C54B2C]/5' : 'border-neutral-200 bg-white'"
-            >
-              <div>
-                <div class="flex justify-between items-start">
-                  <span class="text-[9px] font-bold font-mono uppercase bg-neutral-100 px-2 py-0.5 text-neutral-600">Basic Level</span>
-                  <span v-if="activeTenant.plan === 'basic'" class="text-[8px] font-bold text-white bg-[#C54B2C] px-1.5 py-0.5 uppercase tracking-wide">ACTIVE</span>
-                </div>
-                <h4 class="text-md font-serif font-bold italic mt-2.5">Freelancer Solo</h4>
-                <p class="text-xs text-neutral-400 mt-1">For simple standalone scheduling.</p>
-                <div class="mt-4 font-mono">
-                  <span class="text-xl font-bold font-serif">$29</span>
-                  <span class="text-[10px] text-neutral-450 uppercase">/month</span>
-                </div>
-                
-                <ul class="mt-5 space-y-2 text-[10px] text-neutral-500 border-t pt-4">
-                  <li>👤 Up to <span class="font-bold text-[#1A1A1A]">3 Staff</span> seats</li>
-                  <li>📦 Up to <span class="font-bold text-[#1A1A1A]">5 Gear</span> assets</li>
-                  <li>📅 Up to <span class="font-bold text-[#1A1A1A]">15 Bookings</span> / cycle</li>
-                  <li class="opacity-45">❌ Zero multi-role controls</li>
-                </ul>
-              </div>
-
-              <button 
-                :disabled="activeTenant.plan === 'basic'"
-                @click="upgradeTenantPlan('basic')"
-                class="mt-6 w-full py-2 border transition duration-150 text-[10px] font-bold uppercase tracking-wider text-center"
-                :class="activeTenant.plan === 'basic' ? 'border-neutral-200 text-neutral-400 cursor-not-allowed bg-neutral-50' : 'border-[#1A1A1A] text-[#1A1A1A] hover:bg-neutral-50 cursor-pointer'"
-              >
-                {{ activeTenant.plan === 'basic' ? 'Active Membership' : 'Downgrade to Solo' }}
-              </button>
-            </div>
-
-            <!-- Pro Plan level -->
-            <div 
-              class="border p-5 flex flex-col justify-between shadow-md relative"
-              :class="activeTenant.plan === 'pro' ? 'border-[#C54B2C] bg-[#C54B2C]/5' : 'border-[#1A1A1A]/20 bg-white'"
-            >
-              <span class="absolute top-0 right-0 transform translate-y-[-50%] translate-x-[-10%] bg-[#C54B2C] text-white text-[7.5px] font-extrabold uppercase px-2 py-0.5 tracking-wider font-mono">MOST POPULAR</span>
-              
-              <div>
-                <div class="flex justify-between items-start">
-                  <span class="text-[9px] font-bold font-mono uppercase bg-[#C54B2C]/10 text-[#C54B2C] px-2 py-0.5">Premium Pro</span>
-                  <span v-if="activeTenant.plan === 'pro'" class="text-[8px] font-bold text-white bg-[#C54B2C] px-1.5 py-0.5 uppercase tracking-wide">ACTIVE</span>
-                </div>
-                <h4 class="text-md font-serif font-bold italic mt-2.5">Studio Collective</h4>
-                <p class="text-xs text-neutral-400 mt-1">For active medium creative workspaces.</p>
-                <div class="mt-4 font-mono">
-                  <span class="text-xl font-bold font-serif">$89</span>
-                  <span class="text-[10px] text-neutral-450 uppercase">/month</span>
-                </div>
-                
-                <ul class="mt-5 space-y-2 text-[10px] text-neutral-500 border-t pt-4">
-                  <li>👤 Up to <span class="font-bold text-[#1A1A1A]">10 Staff</span> seats</li>
-                  <li>📦 Up to <span class="font-bold text-[#1A1A1A]">15 Gear</span> assets</li>
-                  <li>📅 Up to <span class="font-bold text-[#1A1A1A]">150 Bookings</span> / cycle</li>
-                  <li>⭐ Double overlap warning alerts</li>
-                </ul>
-              </div>
-
-              <button 
-                :disabled="activeTenant.plan === 'pro'"
-                @click="upgradeTenantPlan('pro')"
-                class="mt-6 w-full py-2 bg-[#C54B2C] text-white hover:bg-opacity-95 transition text-[10px] font-bold uppercase tracking-wider text-center cursor-pointer disabled:bg-neutral-154 disabled:text-neutral-400 disabled:cursor-not-allowed"
-              >
-                {{ activeTenant.plan === 'pro' ? 'Active Membership' : 'Select Pro Collective' }}
-              </button>
-            </div>
-
-            <!-- Enterprise level -->
-            <div 
-              class="border p-5 flex flex-col justify-between"
-              :class="activeTenant.plan === 'enterprise' ? 'border-[#C54B2C] bg-[#C54B2C]/5' : 'border-neutral-200 bg-white'"
-            >
-              <div>
-                <div class="flex justify-between items-start">
-                  <span class="text-[9px] font-bold font-mono uppercase bg-black text-white px-2 py-0.5">Enterprise Max</span>
-                  <span v-if="activeTenant.plan === 'enterprise'" class="text-[8px] font-bold text-white bg-[#C54B2C] px-1.5 py-0.5 uppercase tracking-wide">ACTIVE</span>
-                </div>
-                <h4 class="text-md font-serif font-bold italic mt-2.5">Agency Unlimited</h4>
-                <p class="text-xs text-neutral-400 mt-1">For comprehensive production spaces.</p>
-                <div class="mt-4 font-mono">
-                  <span class="text-xl font-bold font-serif">$199</span>
-                  <span class="text-[10px] text-neutral-450 uppercase">/month</span>
-                </div>
-                
-                <ul class="mt-5 space-y-2 text-[10px] text-neutral-500 border-t pt-4">
-                  <li>👤 <span class="font-bold text-[#1A1A1A]">Unlimited Staff</span> seats</li>
-                  <li>📦 <span class="font-bold text-[#1A1A1A]">Unlimited Gear</span> database</li>
-                  <li>📅 <span class="font-bold text-[#1A1A1A]">Unlimited Bookings</span> / cycle</li>
-                  <li>👑 24/7 dedicated support</li>
-                </ul>
-              </div>
-
-              <button 
-                :disabled="activeTenant.plan === 'enterprise'"
-                @click="upgradeTenantPlan('enterprise')"
-                class="mt-6 w-full py-2 border transition duration-150 text-[10px] font-bold uppercase tracking-wider text-center"
-                :class="activeTenant.plan === 'enterprise' ? 'border-neutral-200 text-neutral-400 cursor-not-allowed bg-neutral-50' : 'border-black bg-black text-white hover:bg-neutral-900 cursor-pointer'"
-              >
-                {{ activeTenant.plan === 'enterprise' ? 'Active Membership' : 'Select Agency Max' }}
-              </button>
-            </div>
-
-          </div>
-
-          <!-- Checkout details mock footer info -->
-          <div class="bg-neutral-50 border p-3 text-[10px] text-neutral-450 flex items-center gap-2 select-none leading-relaxed">
-            <span class="text-neutral-500">💳</span>
-            <span>Billing plans are fully sandboxed. Upgrades instantly resize workspace storage quotas, allocation structures, and active warning flags on this page. No real transactions are processed.</span>
-          </div>
-
-        </div>
-
-        <div class="border-t border-[#1A1A1A]/10 p-4 bg-[#FAF9F6] flex justify-end shrink-0">
-          <button @click="isUpgradeModalOpen = false" class="px-5 py-2 text-xs font-mono border border-neutral-350 bg-white hover:bg-neutral-50 cursor-pointer">
-            Close billing
-          </button>
-        </div>
-
-      </div>
-    </div>
 
   </div>
 </template>
@@ -547,7 +369,6 @@ const selectedEquipmentFilter = ref(null);
 const notification = ref('Tenant scopes initiated. Change active workspaces using the dropdown header to experience isolated SaaS databases.');
 const showAddStaffForm = ref(false);
 const showAddEquipmentForm = ref(false);
-const isUpgradeModalOpen = ref(false);
 
 // Month Navigation coordinates starting at mock timeline June 2026
 const currentYear = ref(2026);
@@ -839,72 +660,24 @@ const createNewTenantDialog = () => {
   const randomSlug = cleanName.toLowerCase().replace(/\s+/g, '-');
   const tntId = `TNT-${Math.floor(100 + Math.random() * 900)}`;
 
-  // Set up as Basic plan by default, adding it to SaaS stack
   const newTnt = {
     id: tntId,
     name: cleanName,
     slug: randomSlug,
-    plan: 'basic',
-    plan_status: 'active',
-    max_staff: 3,
-    max_equipment: 5,
-    max_monthly_bookings: 15
   };
 
   tenants.value.push(newTnt);
   activeTenantId.value = tntId;
   onTenantChanged();
-  notification.value = `Registered and enrolled [${cleanName}] as a new SaaS tenant on our server container. Enjoy sandbox isolation levels.`;
-};
-
-// Upgrade Tenant Plan model locally
-const upgradeTenantPlan = (targetPlan) => {
-  let maxStaff = 3;
-  let maxEq = 5;
-  let maxBookings = 15;
-
-  if (targetPlan === 'pro') {
-    maxStaff = 10;
-    maxEq = 15;
-    maxBookings = 150;
-  } else if (targetPlan === 'enterprise') {
-    maxStaff = 999;
-    maxEq = 999;
-    maxBookings = 9999;
-  }
-
-  // Map and update correct tenant indexes
-  tenants.value = tenants.value.map((t) => {
-    if (t.id !== activeTenantId.value) return t;
-    return {
-      ...t,
-      plan: targetPlan,
-      max_staff: maxStaff,
-      max_equipment: maxEq,
-      max_monthly_bookings: maxBookings
-    };
-  });
-
-  isUpgradeModalOpen.value = false;
-  notification.value = `Upgrade complete! Workspace updated to [${targetPlan.toUpperCase()}] plan. Storage quotas widened successfully.`;
+  notification.value = `Registered and enrolled [${cleanName}] as a new tenant on our server container. Enjoy sandbox isolation levels.`;
 };
 
 // --- ROSTER / ASSETS MUTATORS ---
 const attemptOpenAddStaff = () => {
-  if (staffCount.value >= activeTenant.value.max_staff && !showAddStaffForm.value) {
-    notification.value = 'Alert: Limit of team seats for your active workspace plan has already footprinted. Upgrade to register additional staff.';
-    isUpgradeModalOpen.value = true;
-    return;
-  }
   showAddStaffForm.value = !showAddStaffForm.value;
 };
 
 const addStaffMember = () => {
-  if (staffCount.value >= activeTenant.value.max_staff) {
-    notification.value = 'Action blocked: Enrolled seats limit reached. Please upgrade to write new entries.';
-    return;
-  }
-
   const generatedId = `EMP-${Math.floor(100 + Math.random() * 900)}`;
   const avatarColors = ['#D97706', '#DC2626', '#2563EB', '#059669', '#7C3AED', '#0891B2'];
   const col = avatarColors[Math.floor(Math.random() * avatarColors.length)];
@@ -928,20 +701,10 @@ const addStaffMember = () => {
 };
 
 const attemptOpenAddEquipment = () => {
-  if (equipmentCount.value >= activeTenant.value.max_equipment && !showAddEquipmentForm.value) {
-    notification.value = 'Alert: Equipment limits exceeded on Basic model. Upgrade membership to authorize dynamic inventory expansions.';
-    isUpgradeModalOpen.value = true;
-    return;
-  }
   showAddEquipmentForm.value = !showAddEquipmentForm.value;
 };
 
 const addEquipmentItem = () => {
-  if (equipmentCount.value >= activeTenant.value.max_equipment) {
-    notification.value = 'Action blocked: Capacity reached. Upgrades are available at your convenience.';
-    return;
-  }
-
   const generatedId = `EQ-${Math.floor(100 + Math.random() * 900)}`;
   equipment.value.push({
     id: generatedId,
@@ -1054,14 +817,6 @@ const closeModal = () => {
 };
 
 const saveBooking = () => {
-  // Enforce monthly booking cap on insertion
-  if (!modalBookingId.value && cycleBookingsCount.value >= activeTenant.value.max_monthly_bookings) {
-    notification.value = 'Failed registration: Workspace scheduling capacity for the current month has already exhausted. Upgrade plan level to schedule dynamic shoots.';
-    isUpgradeModalOpen.value = true;
-    isModalOpen.value = false;
-    return;
-  }
-
   // Basic check for timing order
   const startM = parseTimeToMinutes(form.startTime);
   const endM = parseTimeToMinutes(form.endTime);

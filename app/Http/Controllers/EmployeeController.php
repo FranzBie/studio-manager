@@ -37,14 +37,6 @@ class EmployeeController extends Controller
 
         $tenant = Tenant::findOrFail($tenantId);
 
-        // Verify SaaS Business Rule Quota Limits
-        if (!$tenant->canAddStaff()) {
-            return response()->json([
-                'success' => false,
-                'message' => "Quota Limit Exceeded: Your current dynamic plan (" . strtoupper($tenant->plan) . ") only allows a max of {$tenant->max_staff} active staff. Upgrade to unlock unlimited seats."
-            ], 403);
-        }
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'role' => 'required|string|max:255',

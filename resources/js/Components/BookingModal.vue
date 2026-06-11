@@ -9,7 +9,7 @@
             {{ bookingId ? 'Edit Reservation' : 'Schedule New Workspace Session' }}
           </h2>
           <p class="text-[9.5px] text-neutral-400 mt-1 uppercase font-mono tracking-wider">
-            ID: {{ bookingId || '(Auto Assigned BOK-' + activeTenant.plan.toUpperCase() + ')' }}
+            ID: {{ bookingId || '(Auto Assigned)' }}
           </p>
         </div>
         <button @click="$emit('close')" class="p-1 px-2 hover:bg-neutral-100 border border-neutral-200 font-bold">×</button>
@@ -17,12 +17,6 @@
 
       <!-- Scrollable Form Container -->
       <form @submit.prevent="$emit('save')" class="p-6 overflow-y-auto flex-1 space-y-5 text-xs text-[#1A1A1A]">
-
-        <!-- SaaS Booking Limit warning check -->
-        <div v-if="!bookingId && cycleBookingsCount >= activeTenant.max_monthly_bookings" class="p-3 bg-red-50 text-red-700 border border-red-200">
-          <p class="font-bold uppercase font-mono text-[10px]">🛑 Monthly Scheduling Cap Exhausted!</p>
-          <p class="mt-1">Your core '{{ activeTenant.plan }}' plan caps monthly cycles at {{ activeTenant.max_monthly_bookings }} registrations. Upgrade to a PRO or Enterprise plan to unlock bulk booking lists.</p>
-        </div>
 
         <!-- Section 1: Customer Info -->
         <div class="space-y-3.5">
@@ -150,7 +144,6 @@
             Close
           </button>
           <button
-            v-if="bookingId || cycleBookingsCount < activeTenant.max_monthly_bookings"
             @click="$emit('save')"
             type="button"
             class="px-5 py-2 bg-[#C54B2C] text-white font-extrabold uppercase tracking-wide cursor-pointer hover:bg-opacity-95"
